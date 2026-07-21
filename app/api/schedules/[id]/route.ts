@@ -4,6 +4,8 @@ import { authOptions } from "@/lib/auth"
 import { sendEmail } from "@/lib/email"
 import prisma from "@/lib/prisma"
 
+export const dynamic = "force-dynamic"
+
 export async function PUT(req: NextRequest, { params }: { params: { id: string } }) {
   try {
     const session = await getServerSession(authOptions)
