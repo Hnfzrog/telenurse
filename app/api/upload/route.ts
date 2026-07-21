@@ -3,6 +3,8 @@ import { getServerSession } from "next-auth/next"
 import { authOptions } from "@/lib/auth"
 import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3"
 
+export const dynamic = "force-dynamic"
+
 const s3Client = new S3Client({
   region: process.env.B2_REGION || "us-east-005",
   endpoint: `https://s3.${process.env.B2_REGION || "us-east-005"}.backblazeb2.com`,
