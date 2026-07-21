@@ -6,6 +6,8 @@ import Link from "next/link"
 import Image from "next/image"
 import { ArrowLeft, Calendar, Tag } from "lucide-react"
 
+export const dynamic = "force-dynamic"
+
 export default async function EducationDetailPage({ params }: { params: { slug: string } }) {
   const session = await getServerSession(authOptions)
   if (!session) redirect("/auth/login")

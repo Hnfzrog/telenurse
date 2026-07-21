@@ -15,6 +15,7 @@ export default function OnboardingPage() {
   const { toast } = useToast()
   const [loading, setLoading] = useState(false)
   const [indicators, setIndicators] = useState<any[]>([])
+  const [values, setValues] = useState<Record<string, string>>({})
 
   useEffect(() => {
     fetch("/api/admin/indicators").then(res => res.json()).then(data => setIndicators(data || []))
@@ -126,10 +127,43 @@ export default function OnboardingPage() {
             <h2 className="text-xl font-bold text-gray-800 flex items-center gap-2 border-b pb-2">
               <HeartPulse className="h-5 w-5 text-brand-teal" /> Tanda-tanda Vital Saat Ini (Opsional)
             </h2>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              {indicators.map(ind => (
-                <IndicatorInput key={ind.name} indicator={ind} />
-              ))}
+            <div className="grid grid-cols-2 gap-3">
+              {indicators.map(f => {
+                const valNum = parseFloat(values[f.name] || "")
+                const isFilled = (values[f.name] || "").trim() !== "" && !isNaN(valNum)
+                const isAbnormal = isFilled && (
+                  (f.minValue !== null && valNum < Number(f.minValue)) ||
+                  (f.maxValue !== null && valNum > Number(f.maxValue))
+                )
+                const isNormal = isFilled && !isAbnormal
+                const status = isAbnormal ? "Tinggi/Rendah" : isNormal ? "Normal" : null
+                const unit = f.unit ? `(${f.unit})` : ""
+                
+                return (
+                  <div key={f.name}>
+                    <div className="flex justify-between items-center">
+                      <Label className="text-xs text-gray-700 font-semibold">{f.label} <span className="text-gray-400 font-normal">{unit}</span></Label>
+                      {status && (
+                        <span className={`text-[10px] flex items-center gap-1 font-bold px-1.5 py-0.5 rounded ${status === 'Normal' ? 'text-green-600 bg-green-50' : 'text-red-600 bg-red-50'}`}>
+                          <AlertCircle className="h-3 w-3" /> {status}
+                        </span>
+                      )}
+                    </div>
+                    <Input 
+                      name={f.name} 
+                      type="number" 
+                      step="any" 
+                      className={`mt-1 transition-colors ${status === 'Normal' ? 'border-green-300 bg-green-50/30 focus-visible:ring-green-200' : status ? 'border-red-300 bg-red-50/30 focus-visible:ring-red-200' : ''}`} 
+                      placeholder="—" 
+                      value={values[f.name] || ""}
+                      onChange={(e) => setValues({...values, [f.name]: e.target.value})}
+                    />
+                    <div className="text-[10px] text-gray-400 mt-1">
+                      Batas Normal: {f.minValue ?? '0'} - {f.maxValue ?? '∞'}
+                    </div>
+                  </div>
+                )
+              })}
             </div>
           </div>
 

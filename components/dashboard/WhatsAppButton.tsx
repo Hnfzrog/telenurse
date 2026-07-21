@@ -18,19 +18,12 @@ export function WhatsAppButton({ patientName, nurses = [] }: { patientName: stri
   const message = `${greeting} Ners, saya ${patientName} mau konsultasi nih.`
   const encodedMessage = encodeURIComponent(message)
 
-  if (nurses.length === 1 || nurses.length === 0) {
-    const defaultPhone = nurses[0]?.phone || "6281234567890"
-    const href = `https://wa.me/${defaultPhone}?text=${encodedMessage}`
+  if (nurses.length === 0) {
     return (
-      <a
-        href={href}
-        target="_blank"
-        rel="noreferrer"
-        className="inline-flex items-center gap-2 rounded-xl bg-green-500 text-white px-5 py-3 text-sm font-semibold hover:bg-green-600 hover:scale-105 transition-all shadow-md"
-      >
+      <button disabled className="inline-flex items-center gap-2 rounded-xl bg-gray-400 text-white px-5 py-3 text-sm font-semibold shadow-md cursor-not-allowed">
         <MessageCircle className="h-4 w-4" />
-        Konsultasi WA
-      </a>
+        Belum Ada Perawat
+      </button>
     )
   }
 

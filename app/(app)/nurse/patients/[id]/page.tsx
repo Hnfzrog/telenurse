@@ -13,6 +13,8 @@ import { StatusBadge } from "@/components/ui/StatusBadge"
 import { DynamicIndicatorsChart } from "@/components/dashboard/DynamicIndicatorsChart"
 import { SharedDataTable } from "@/components/ui/SharedDataTable"
 
+export const dynamic = "force-dynamic"
+
 export default async function PatientDetailPage({ params }: { params: { id: string } }) {
   const session = await getServerSession(authOptions)
   if (!session || session.user.role !== "PERAWAT") redirect("/auth/login")

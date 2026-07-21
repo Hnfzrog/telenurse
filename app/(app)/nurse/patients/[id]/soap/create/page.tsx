@@ -9,6 +9,8 @@ import { Textarea } from "@/components/ui/textarea"
 import { useToast } from "@/hooks/use-toast"
 import { ArrowLeft } from "lucide-react"
 
+export const dynamic = "force-dynamic"
+
 export default function SoapCreatePage({ params }: { params: { id: string } }) {
   const router = useRouter()
   const { toast } = useToast()

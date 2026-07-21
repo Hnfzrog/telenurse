@@ -14,14 +14,14 @@ export function ExportRecordsButton({ records, assessments = [], patientName }: 
     
     records.forEach(r => {
       const d = new Date(r.recordedAt)
-      const key = d.toLocaleDateString("id-ID")
+      const key = d.toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" })
       if (!map.has(key)) map.set(key, { dateObj: d, dateStr: key, monitoring: [], soap: [] })
       map.get(key)!.monitoring.push(r)
     })
     
     assessments.forEach(a => {
       const d = new Date(a.assessmentDate)
-      const key = d.toLocaleDateString("id-ID")
+      const key = d.toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" })
       if (!map.has(key)) map.set(key, { dateObj: d, dateStr: key, monitoring: [], soap: [] })
       map.get(key)!.soap.push(a)
     })
@@ -61,6 +61,11 @@ export function ExportRecordsButton({ records, assessments = [], patientName }: 
 
   const exportPDF = () => {
     const doc = new jsPDF("landscape")
+    
+    // Set white background for the entire page to fix transparency in dark mode viewers
+    doc.setFillColor(255, 255, 255)
+    doc.rect(0, 0, doc.internal.pageSize.getWidth(), doc.internal.pageSize.getHeight(), 'F')
+    
     doc.text(`Riwayat Kesehatan (Monitoring & S.O.A.P) - ${patientName}`, 14, 15)
     
     const rows = generateRows()

@@ -63,15 +63,15 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
     let message = ""
     if (status === "APPROVED") {
       title = "Jadwal Disetujui"
-      message = `Pengajuan jadwal kontrol Anda pada ${new Date(schedule.scheduledDate).toLocaleDateString("id-ID")} telah disetujui perawat.`
+      message = `Pengajuan jadwal kontrol Anda pada ${new Date(schedule.scheduledDate).toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" })} telah disetujui perawat.`
     } else if (status === "REJECTED") {
       title = "Jadwal Ditolak"
-      message = `Pengajuan jadwal kontrol Anda pada ${new Date(schedule.scheduledDate).toLocaleDateString("id-ID")} ditolak perawat.`
+      message = `Pengajuan jadwal kontrol Anda pada ${new Date(schedule.scheduledDate).toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" })} ditolak perawat.`
     } else if (status === "COMPLETED") {
       title = "Kunjungan Selesai"
       message = `Sesi kontrol/kunjungan Anda telah ditandai selesai.`
       if (needsFollowUp && followUpDate) {
-        message += ` Perawat menyarankan kontrol lanjutan pada ${new Date(followUpDate).toLocaleDateString("id-ID")}.`
+        message += ` Perawat menyarankan kontrol lanjutan pada ${new Date(followUpDate).toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" })}.`
       }
     }
 

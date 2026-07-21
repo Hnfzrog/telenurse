@@ -7,6 +7,8 @@ import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { ArrowLeft } from "lucide-react"
 
+export const dynamic = "force-dynamic"
+
 export default async function NurseEditArticlePage({ params }: { params: { id: string } }) {
   const session = await getServerSession(authOptions)
   if (!session || session.user.role !== "PERAWAT") redirect("/auth/login")

@@ -23,7 +23,7 @@ export function ArticlesTableClient({ articles }: { articles: any[] }) {
         },
         {
           header: "Tanggal Upload",
-          render: (a) => <span className="text-gray-600">{new Date(a.createdAt).toLocaleDateString("id-ID")}</span>,
+          render: (a) => <span className="text-gray-600">{new Date(a.createdAt).toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" })}</span>,
         },
         {
           header: "Status",

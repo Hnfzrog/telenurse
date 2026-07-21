@@ -4,6 +4,8 @@ import prisma from "@/lib/prisma"
 import { redirect, notFound } from "next/navigation"
 import { ArticleFormClient } from "../../ArticleFormClient"
 
+export const dynamic = "force-dynamic"
+
 export default async function EditArticlePage({ params }: { params: { id: string } }) {
   const session = await getServerSession(authOptions)
   if (!session || session.user.role !== "ADMIN") redirect("/auth/login")

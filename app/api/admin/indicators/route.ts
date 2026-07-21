@@ -14,9 +14,24 @@ export async function GET() {
       await prisma.$executeRawUnsafe(`ALTER TABLE "health_records" ADD COLUMN "nurse_notes" TEXT;`)
     } catch(e) {}
 
-    const indicators = await prisma.monitoringIndicator.findMany({
+    let indicators = await prisma.monitoringIndicator.findMany({
       orderBy: { id: 'desc' }
     })
+
+    if (indicators.length === 0) {
+      const defaultIndicators = [
+        { name: "systolicBp", label: "Sistolik", unit: "mmHg", minValue: 90, maxValue: 120 },
+        { name: "diastolicBp", label: "Diastolik", unit: "mmHg", minValue: 60, maxValue: 80 },
+        { name: "bodyTemperature", label: "Suhu Tubuh", unit: "°C", minValue: 36.5, maxValue: 37.5 },
+        { name: "heartRate", label: "Detak Jantung", unit: "bpm", minValue: 60, maxValue: 100 },
+        { name: "oxygenSaturation", label: "SpO2", unit: "%", minValue: 95, maxValue: 100 },
+        { name: "bloodSugar", label: "Gula Darah", unit: "mg/dL", minValue: 70, maxValue: 140 },
+        { name: "bodyWeight", label: "Berat Badan", unit: "kg", minValue: null, maxValue: null },
+      ]
+      await prisma.monitoringIndicator.createMany({ data: defaultIndicators })
+      indicators = await prisma.monitoringIndicator.findMany({ orderBy: { id: 'desc' } })
+    }
+
     return NextResponse.json(indicators)
   } catch (error: any) {
     return NextResponse.json({ error: error.message }, { status: 500 })

@@ -132,7 +132,7 @@ export function NursesClient({ initialNurses }: { initialNurses: any[] }) {
           },
           {
             header: "Tanggal Terdaftar",
-            render: (n) => <span className="text-gray-600">{new Date(n.createdAt).toLocaleDateString("id-ID")}</span>,
+            render: (n) => <span className="text-gray-600">{new Date(n.createdAt).toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" })}</span>,
           },
           {
             header: "Status",

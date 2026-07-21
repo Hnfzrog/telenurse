@@ -94,7 +94,7 @@ export function HistoryClient({
             {new Date(schedule.scheduledDate).toLocaleDateString("id-ID", { day: "2-digit", month: "short", year: "numeric" })}
           </div>
           <div className="text-xs text-gray-500 flex items-center gap-1 mt-0.5">
-            <Clock className="h-3 w-3" /> {new Date(schedule.scheduledDate).toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" })}
+            <Clock className="h-3 w-3" /> {schedule.scheduledTime || "00:00"}
           </div>
         </div>
       )

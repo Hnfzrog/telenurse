@@ -44,7 +44,7 @@ export function NursePatientsTableClient({ patients }: { patients: any[] }) {
             const lastRecord = p.healthRecords?.[0]
             return (
               <span className="text-gray-500 text-xs">
-                {lastRecord ? new Date(lastRecord.recordedAt).toLocaleDateString("id-ID") : "Belum ada"}
+                {lastRecord ? new Date(lastRecord.recordedAt).toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" }) : "Belum ada"}
               </span>
             )
           },

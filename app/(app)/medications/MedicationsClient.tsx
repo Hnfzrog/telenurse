@@ -36,9 +36,9 @@ export function MedicationsClient({ medications }: { medications: any[] }) {
 
   // Helper to check if a reminder time has a corresponding log today
   const hasLogTodayForTime = (logs: any[], timeStr: string) => {
-    const today = new Date().toLocaleDateString("id-ID")
+    const today = new Date().toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" })
     return logs.some(log => {
-      const logDate = new Date(log.takenAt).toLocaleDateString("id-ID")
+      const logDate = new Date(log.takenAt).toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" })
       return logDate === today && (timeStr ? log.notes?.includes(timeStr) : true)
     })
   }

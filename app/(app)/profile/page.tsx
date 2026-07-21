@@ -51,7 +51,7 @@ export default async function ProfilePage() {
                 <Phone className="h-4 w-4 text-gray-400" /> {user.phone || <span className="text-gray-400 italic">Belum diisi</span>}
               </div>
               <div className="flex items-center gap-3 text-sm text-gray-700">
-                <Calendar className="h-4 w-4 text-gray-400" /> Bergabung sejak {new Date(user.createdAt).toLocaleDateString("id-ID")}
+                <Calendar className="h-4 w-4 text-gray-400" /> Bergabung sejak {new Date(user.createdAt).toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" })}
               </div>
             </div>
 

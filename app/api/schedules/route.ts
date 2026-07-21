@@ -39,7 +39,7 @@ export async function POST(req: NextRequest) {
       userId: parseInt(session.user.id),
       type: "SCHEDULE_REMINDER",
       title: "Pengajuan Jadwal",
-      message: `Pengajuan jadwal kontrol Anda pada ${new Date(scheduledDate).toLocaleDateString("id-ID")} telah dikirim dan menunggu konfirmasi perawat.`,
+      message: `Pengajuan jadwal kontrol Anda pada ${new Date(scheduledDate).toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" })} telah dikirim dan menunggu konfirmasi perawat.`,
       url: "/schedule"
     })
 
@@ -50,7 +50,7 @@ export async function POST(req: NextRequest) {
         userId: nurse.id,
         type: "SCHEDULE_REMINDER",
         title: "Pengajuan Kontrol Baru",
-        message: `Pasien ${session.user.name || "ID " + session.user.id} mengajukan jadwal kontrol baru pada ${new Date(scheduledDate).toLocaleDateString("id-ID")}.`,
+        message: `Pasien ${session.user.name || "ID " + session.user.id} mengajukan jadwal kontrol baru pada ${new Date(scheduledDate).toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" })}.`,
         url: "/nurse/schedules"
       })
     }
