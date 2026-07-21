@@ -1,4 +1,3 @@
-export const dynamic = "force-dynamic";
 import { getServerSession } from "next-auth/next"
 import { authOptions } from "@/lib/auth"
 import prisma from "@/lib/prisma"
@@ -28,3 +27,5 @@ export default async function EducationPage() {
 
   return <EducationClient articles={articles} categories={categories} />
 }
+
+export const dynamic = "force-dynamic";

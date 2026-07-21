@@ -1,4 +1,3 @@
-export const dynamic = "force-dynamic";
 import { getServerSession } from "next-auth/next"
 import { authOptions } from "@/lib/auth"
 import { redirect } from "next/navigation"
@@ -11,3 +10,5 @@ export default async function DashboardRouter() {
   if (session.user.role === "PERAWAT") redirect("/nurse/dashboard")
   redirect("/dashboard/patient")
 }
+
+export const dynamic = "force-dynamic";

@@ -1,4 +1,3 @@
-export const dynamic = "force-dynamic";
 import { getServerSession } from "next-auth/next"
 import { authOptions } from "@/lib/auth"
 import { redirect } from "next/navigation"
@@ -18,3 +17,5 @@ export default async function Home() {
     redirect("/dashboard/patient")
   }
 }
+
+export const dynamic = "force-dynamic";

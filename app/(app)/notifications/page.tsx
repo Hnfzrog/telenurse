@@ -1,4 +1,3 @@
-export const dynamic = "force-dynamic";
 import { getServerSession } from "next-auth/next"
 import { authOptions } from "@/lib/auth"
 import prisma from "@/lib/prisma"
@@ -17,3 +16,5 @@ export default async function NotificationsPage() {
 
   return <NotificationsClient initialNotifications={notifications} />
 }
+
+export const dynamic = "force-dynamic";
