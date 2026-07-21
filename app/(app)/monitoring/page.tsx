@@ -6,12 +6,7 @@ import Link from "next/link"
 import { Plus, Activity } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { requireOnboarding } from "@/lib/checkOnboarding"
-
-function StatusBadge({ isAbnormal }: { isAbnormal: boolean }) {
-  return isAbnormal
-    ? <span className="text-xs font-bold text-red-600 bg-red-50 px-2.5 py-1 rounded-full border border-red-200">Abnormal</span>
-    : <span className="text-xs font-bold text-green-600 bg-green-50 px-2.5 py-1 rounded-full border border-green-200">Normal</span>
-}
+import { MonitoringTableClient } from "./MonitoringTableClient"
 
 export default async function MonitoringPage() {
   const session = await getServerSession(authOptions)
@@ -50,40 +45,7 @@ export default async function MonitoringPage() {
           <p className="text-sm text-gray-400 mt-1">Klik tombol "Catat Baru" untuk mulai mencatat.</p>
         </div>
       ) : (
-        <div className="rounded-xl border border-gray-200 bg-white overflow-hidden shadow-sm">
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead className="bg-gray-50 border-b border-gray-200">
-                <tr>
-                  <th className="text-left px-4 py-3 font-medium text-gray-600 whitespace-nowrap">Tanggal & Waktu</th>
-                  {session.user.role !== "PASIEN" && <th className="text-left px-4 py-3 font-medium text-gray-600">Pasien</th>}
-                  <th className="text-left px-4 py-3 font-medium text-gray-600 whitespace-nowrap">TD (mmHg)</th>
-                  <th className="text-left px-4 py-3 font-medium text-gray-600 whitespace-nowrap">Suhu (°C)</th>
-                  <th className="text-left px-4 py-3 font-medium text-gray-600 whitespace-nowrap">Nadi (bpm)</th>
-                  <th className="text-left px-4 py-3 font-medium text-gray-600 whitespace-nowrap">SpO₂ (%)</th>
-                  <th className="text-left px-4 py-3 font-medium text-gray-600">Keluhan</th>
-                  <th className="text-left px-4 py-3 font-medium text-gray-600">Status</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-100">
-                {records.map((r) => (
-                  <tr key={r.id} className={r.isAbnormal ? "bg-red-50/40" : "hover:bg-gray-50"}>
-                    <td className="px-4 py-3 text-gray-700 whitespace-nowrap">
-                      {new Date(r.recordedAt).toLocaleString("id-ID", { day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" })}
-                    </td>
-                    {session.user.role !== "PASIEN" && <td className="px-4 py-3 font-medium text-gray-800">{r.patient.name}</td>}
-                    <td className="px-4 py-3 font-semibold text-gray-800">{r.systolicBp && r.diastolicBp ? `${r.systolicBp}/${r.diastolicBp}` : "-"}</td>
-                    <td className="px-4 py-3 text-gray-700">{r.bodyTemperature ? `${r.bodyTemperature}` : "-"}</td>
-                    <td className="px-4 py-3 text-gray-700">{r.heartRate ?? "-"}</td>
-                    <td className="px-4 py-3 text-gray-700">{r.oxygenSaturation ?? "-"}</td>
-                    <td className="px-4 py-3 text-gray-600 max-w-[180px] truncate">{r.complaints || "-"}</td>
-                    <td className="px-4 py-3"><StatusBadge isAbnormal={r.isAbnormal} /></td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
+        <MonitoringTableClient records={records} />
       )}
     </div>
   )

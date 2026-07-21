@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { SharedDataTable } from "@/components/ui/SharedDataTable"
 import { useToast } from "@/hooks/use-toast"
 import { Plus, X, Edit, Trash2 } from "lucide-react"
 
@@ -89,47 +90,44 @@ export function CategoriesClient({ initialCategories }: { initialCategories: any
         </Button>
       </div>
 
-      <div className="rounded-xl border border-gray-200 bg-white shadow-sm overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm">
-            <thead className="bg-gray-50 border-b border-gray-200">
-              <tr>
-                <th className="text-left px-5 py-3 font-medium text-gray-600">Nama Kategori</th>
-                <th className="text-left px-5 py-3 font-medium text-gray-600">Slug</th>
-                <th className="text-left px-5 py-3 font-medium text-gray-600">Total Artikel</th>
-                <th className="text-center px-5 py-3 font-medium text-gray-600">Aksi</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-100">
-              {initialCategories.map((c) => (
-                <tr key={c.id} className="hover:bg-gray-50">
-                  <td className="px-5 py-3 font-medium text-gray-800">{c.name}</td>
-                  <td className="px-5 py-3 text-gray-600">{c.slug}</td>
-                  <td className="px-5 py-3 text-gray-600">{c._count.contents} artikel</td>
-                  <td className="px-5 py-3 text-center">
-                    <div className="flex items-center justify-center gap-2">
-                      <Button size="icon" variant="ghost" className="h-8 w-8 text-blue-600 hover:bg-blue-50" onClick={() => openEditModal(c)}>
-                        <Edit className="h-4 w-4" />
-                      </Button>
-                      <Button 
-                        size="icon" 
-                        variant="ghost" 
-                        className="h-8 w-8 text-red-600 hover:bg-red-50" 
-                        onClick={() => { setDeleteId(c.id); setDeleteModalOpen(true); }}
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-              {initialCategories.length === 0 && (
-                <tr><td colSpan={4} className="px-5 py-8 text-center text-gray-500">Belum ada data kategori.</td></tr>
-              )}
-            </tbody>
-          </table>
-        </div>
-      </div>
+      <SharedDataTable
+        data={initialCategories}
+        searchKeys={["name", "slug"]}
+        emptyMessage="Belum ada data kategori."
+        columns={[
+          {
+            header: "Nama Kategori",
+            render: (c) => <span className="font-medium text-gray-800">{c.name}</span>,
+          },
+          {
+            header: "Slug",
+            render: (c) => <span className="text-gray-600">{c.slug}</span>,
+          },
+          {
+            header: "Total Artikel",
+            render: (c) => <span className="text-gray-600">{c._count.contents} artikel</span>,
+          },
+          {
+            header: "Aksi",
+            className: "text-center",
+            render: (c) => (
+              <div className="flex items-center justify-center gap-2">
+                <Button size="icon" variant="ghost" className="h-8 w-8 text-blue-600 hover:bg-blue-50" onClick={() => openEditModal(c)}>
+                  <Edit className="h-4 w-4" />
+                </Button>
+                <Button
+                  size="icon"
+                  variant="ghost"
+                  className="h-8 w-8 text-red-600 hover:bg-red-50"
+                  onClick={() => { setDeleteId(c.id); setDeleteModalOpen(true) }}
+                >
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              </div>
+            ),
+          },
+        ]}
+      />
 
       {/* Add/Edit Modal */}
       {modalOpen && (

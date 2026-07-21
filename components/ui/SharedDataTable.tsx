@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState, useMemo } from "react"
+import React, { useEffect, useMemo, useState } from "react"
 import { ChevronLeft, ChevronRight, Search } from "lucide-react"
 
 export interface ColumnDef<T> {
@@ -10,12 +10,18 @@ export interface ColumnDef<T> {
   className?: string
 }
 
+function getValueByPath(obj: any, path: string) {
+  return path.split(".").reduce((acc, part) => (acc == null ? undefined : acc[part]), obj)
+}
+
 interface SharedDataTableProps<T> {
   data: T[]
   columns: ColumnDef<T>[]
   searchable?: boolean
   searchKeys?: (keyof T | string)[]
   emptyMessage?: string
+  showToolbar?: boolean
+  enablePagination?: boolean
 }
 
 export function SharedDataTable<T>({ 
@@ -23,7 +29,9 @@ export function SharedDataTable<T>({
   columns, 
   searchable = true, 
   searchKeys = [], 
-  emptyMessage = "Data tidak ditemukan" 
+  emptyMessage = "Data tidak ditemukan",
+  showToolbar = true,
+  enablePagination = true,
 }: SharedDataTableProps<T>) {
   const [currentPage, setCurrentPage] = useState(1)
   const [pageSize, setPageSize] = useState(10)
@@ -38,7 +46,7 @@ export function SharedDataTable<T>({
       // If searchKeys are specified, only search in those keys
       if (searchKeys.length > 0) {
         return searchKeys.some(key => {
-          const val = (item as any)[key]
+          const val = getValueByPath(item, String(key))
           if (val === null || val === undefined) return false
           return String(val).toLowerCase().includes(query)
         })
@@ -54,46 +62,54 @@ export function SharedDataTable<T>({
 
   const totalPages = Math.ceil(filteredData.length / pageSize)
   const startIndex = (currentPage - 1) * pageSize
-  const paginatedData = filteredData.slice(startIndex, startIndex + pageSize)
+  const paginatedData = enablePagination
+    ? filteredData.slice(startIndex, startIndex + pageSize)
+    : filteredData
 
   // Reset page when search or data changes
-  useMemo(() => {
+  useEffect(() => {
     setCurrentPage(1)
   }, [searchQuery, data.length])
 
   return (
     <div className="w-full">
-      <div className="flex flex-col sm:flex-row justify-between items-center mb-4 gap-4">
-        <div className="flex items-center gap-2 text-sm text-gray-600">
-          <span>Tampilkan</span>
-          <select 
-            className="border border-gray-300 rounded px-2 py-1 outline-none focus:border-brand-blue"
-            value={pageSize}
-            onChange={(e) => {
-              setPageSize(Number(e.target.value))
-              setCurrentPage(1)
-            }}
-          >
-            <option value={10}>10</option>
-            <option value={20}>20</option>
-            <option value={50}>50</option>
-          </select>
-          <span>data</span>
-        </div>
+      {showToolbar && (
+        <div className="flex flex-col sm:flex-row justify-between items-center mb-4 gap-4">
+          {enablePagination ? (
+            <div className="flex items-center gap-2 text-sm text-gray-600">
+              <span>Tampilkan</span>
+              <select
+                className="border border-gray-300 rounded px-2 py-1 outline-none focus:border-brand-blue"
+                value={pageSize}
+                onChange={(e) => {
+                  setPageSize(Number(e.target.value))
+                  setCurrentPage(1)
+                }}
+              >
+                <option value={10}>10</option>
+                <option value={20}>20</option>
+                <option value={50}>50</option>
+              </select>
+              <span>data</span>
+            </div>
+          ) : (
+            <div />
+          )}
 
-        {searchable && (
-          <div className="relative w-full sm:w-64">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
-            <input
-              type="text"
-              placeholder="Cari..."
-              className="w-full pl-9 pr-4 py-2 border border-gray-300 rounded-lg text-sm outline-none focus:border-brand-blue focus:ring-1 focus:ring-brand-blue/30"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
-          </div>
-        )}
-      </div>
+          {searchable && (
+            <div className="relative w-full sm:w-64">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+              <input
+                type="text"
+                placeholder="Cari..."
+                className="w-full pl-9 pr-4 py-2 border border-gray-300 rounded-lg text-sm outline-none focus:border-brand-blue focus:ring-1 focus:ring-brand-blue/30"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+            </div>
+          )}
+        </div>
+      )}
 
       <div className="overflow-x-auto rounded-xl border border-gray-200 bg-white shadow-sm">
         <table className="w-full text-sm">
@@ -112,7 +128,7 @@ export function SharedDataTable<T>({
                 <tr key={rowIndex} className="hover:bg-gray-50 transition-colors">
                   {columns.map((col, colIndex) => (
                     <td key={colIndex} className={`px-5 py-4 ${col.className || ""}`}>
-                      {col.render ? col.render(item) : col.accessorKey ? String((item as any)[col.accessorKey] || "-") : "-"}
+                      {col.render ? col.render(item) : col.accessorKey ? String(getValueByPath(item, String(col.accessorKey)) ?? "-") : "-"}
                     </td>
                   ))}
                 </tr>
@@ -128,7 +144,7 @@ export function SharedDataTable<T>({
         </table>
       </div>
 
-      {filteredData.length > 0 && (
+      {enablePagination && filteredData.length > 0 && (
         <div className="flex flex-col sm:flex-row justify-between items-center mt-4 text-sm text-gray-600 gap-4">
           <div>
             Menampilkan {startIndex + 1} hingga {Math.min(startIndex + pageSize, filteredData.length)} dari {filteredData.length} data

@@ -4,6 +4,7 @@ import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import { SharedDataTable } from "@/components/ui/SharedDataTable"
 import { Activity, Plus, Save, Trash2, Edit2, X } from "lucide-react"
 
 export function IndicatorsClient({ initialIndicators }: { initialIndicators: any[] }) {
@@ -37,7 +38,7 @@ export function IndicatorsClient({ initialIndicators }: { initialIndicators: any
         })
         if (res.ok) {
           const newInd = await res.json()
-          setIndicators([...indicators, newInd])
+          setIndicators([newInd, ...indicators])
           setIsAdding(false)
           router.refresh()
         }
@@ -84,71 +85,68 @@ export function IndicatorsClient({ initialIndicators }: { initialIndicators: any
         </Button>
       </div>
 
-      <div className="rounded-xl border border-gray-200 bg-white overflow-hidden shadow-sm">
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm">
-            <thead className="bg-gray-50 border-b border-gray-200">
-              <tr>
-                <th className="text-left px-5 py-3 font-medium text-gray-600">Kode Indikator</th>
-                <th className="text-left px-5 py-3 font-medium text-gray-600">Label UI</th>
-                <th className="text-left px-5 py-3 font-medium text-gray-600">Satuan</th>
-                <th className="text-left px-5 py-3 font-medium text-gray-600">Batas Bawah (Normal)</th>
-                <th className="text-left px-5 py-3 font-medium text-gray-600">Batas Atas (Normal)</th>
-                <th className="text-right px-5 py-3 font-medium text-gray-600">Aksi</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-100">
-              {isAdding && (
-                <tr className="bg-blue-50/50">
-                  <td className="px-5 py-3"><Input placeholder="Kode (e.g. heartRate)" value={form.name} onChange={e => setForm({...form, name: e.target.value})} className="h-8 font-mono text-xs w-full" /></td>
-                  <td className="px-5 py-3"><Input placeholder="Label (e.g. Denyut Nadi)" value={form.label} onChange={e => setForm({...form, label: e.target.value})} className="h-8 w-full" /></td>
-                  <td className="px-5 py-3"><Input placeholder="Satuan" value={form.unit || ""} onChange={e => setForm({...form, unit: e.target.value})} className="h-8 w-20" /></td>
-                  <td className="px-5 py-3"><Input type="number" step="any" placeholder="Min" value={form.minValue || ""} onChange={e => setForm({...form, minValue: e.target.value})} className="h-8 w-24" /></td>
-                  <td className="px-5 py-3"><Input type="number" step="any" placeholder="Max" value={form.maxValue || ""} onChange={e => setForm({...form, maxValue: e.target.value})} className="h-8 w-24" /></td>
-                  <td className="px-5 py-3 text-right">
-                    <div className="flex justify-end gap-1">
-                      <Button size="sm" variant="ghost" className="h-8 w-8 p-0 text-green-600" onClick={handleSave} disabled={loading}><Save className="h-4 w-4" /></Button>
-                      <Button size="sm" variant="ghost" className="h-8 w-8 p-0 text-gray-400" onClick={() => setIsAdding(false)}><X className="h-4 w-4" /></Button>
-                    </div>
-                  </td>
-                </tr>
-              )}
-              {indicators.map((ind) => (
-                <tr key={ind.id} className="hover:bg-gray-50">
-                  <td className="px-5 py-3 text-gray-700 font-mono text-xs">{ind.name}</td>
-                  {editingId === ind.id ? (
-                    <>
-                      <td className="px-5 py-3"><Input value={form.label} onChange={e => setForm({...form, label: e.target.value})} className="h-8" /></td>
-                      <td className="px-5 py-3"><Input value={form.unit || ""} onChange={e => setForm({...form, unit: e.target.value})} className="h-8 w-20" /></td>
-                      <td className="px-5 py-3"><Input type="number" step="any" value={form.minValue || ""} onChange={e => setForm({...form, minValue: parseFloat(e.target.value)})} className="h-8 w-24" /></td>
-                      <td className="px-5 py-3"><Input type="number" step="any" value={form.maxValue || ""} onChange={e => setForm({...form, maxValue: parseFloat(e.target.value)})} className="h-8 w-24" /></td>
-                      <td className="px-5 py-3 text-right">
-                        <div className="flex justify-end gap-1">
-                          <Button size="sm" variant="ghost" className="h-8 w-8 p-0 text-green-600" onClick={handleSave} disabled={loading}><Save className="h-4 w-4" /></Button>
-                          <Button size="sm" variant="ghost" className="h-8 w-8 p-0 text-gray-400" onClick={() => setEditingId(null)}><X className="h-4 w-4" /></Button>
-                        </div>
-                      </td>
-                    </>
-                  ) : (
-                    <>
-                      <td className="px-5 py-3 font-medium text-gray-800">{ind.label}</td>
-                      <td className="px-5 py-3 text-gray-600">{ind.unit || "-"}</td>
-                      <td className="px-5 py-3 font-medium text-emerald-600">{ind.minValue?.toString() || "-"}</td>
-                      <td className="px-5 py-3 font-medium text-red-600">{ind.maxValue?.toString() || "-"}</td>
-                      <td className="px-5 py-3 text-right">
-                        <div className="flex justify-end gap-1">
-                          <Button size="sm" variant="ghost" className="h-8 w-8 p-0 text-[#1976d2]" onClick={() => startEdit(ind)}><Edit2 className="h-4 w-4" /></Button>
-                          <Button size="sm" variant="ghost" className="h-8 w-8 p-0 text-red-500" onClick={() => handleDelete(ind.id)} disabled={loading}><Trash2 className="h-4 w-4" /></Button>
-                        </div>
-                      </td>
-                    </>
-                  )}
-                </tr>
-              ))}
-            </tbody>
-          </table>
+      {isAdding && (
+        <div className="rounded-xl border border-blue-200 bg-blue-50/40 p-4">
+          <div className="grid gap-3 md:grid-cols-5">
+            <Input placeholder="Kode (e.g. heartRate)" value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} className="h-9 font-mono text-xs" />
+            <Input placeholder="Label (e.g. Denyut Nadi)" value={form.label} onChange={e => setForm({ ...form, label: e.target.value })} className="h-9" />
+            <Input placeholder="Satuan" value={form.unit || ""} onChange={e => setForm({ ...form, unit: e.target.value })} className="h-9" />
+            <Input type="number" step="any" placeholder="Min" value={form.minValue || ""} onChange={e => setForm({ ...form, minValue: e.target.value })} className="h-9" />
+            <Input type="number" step="any" placeholder="Max" value={form.maxValue || ""} onChange={e => setForm({ ...form, maxValue: e.target.value })} className="h-9" />
+          </div>
+          <div className="mt-3 flex justify-end gap-2">
+            <Button size="sm" variant="ghost" className="text-gray-500" onClick={() => setIsAdding(false)}><X className="h-4 w-4" /></Button>
+            <Button size="sm" className="bg-[#1976d2] hover:bg-[#1565c0]" onClick={handleSave} disabled={loading}><Save className="h-4 w-4 mr-1" /> Simpan</Button>
+          </div>
         </div>
-      </div>
+      )}
+
+      <SharedDataTable
+        data={indicators}
+        searchKeys={["name", "label", "unit"]}
+        emptyMessage="Belum ada indikator"
+        columns={[
+          {
+            header: "Kode Indikator",
+            render: (ind) => <span className="text-gray-700 font-mono text-xs">{ind.name}</span>,
+          },
+          {
+            header: "Label UI",
+            render: (ind) => editingId === ind.id ? <Input value={form.label} onChange={e => setForm({ ...form, label: e.target.value })} className="h-8" /> : <span className="font-medium text-gray-800">{ind.label}</span>,
+          },
+          {
+            header: "Satuan",
+            render: (ind) => editingId === ind.id ? <Input value={form.unit || ""} onChange={e => setForm({ ...form, unit: e.target.value })} className="h-8 w-20" /> : <span className="text-gray-600">{ind.unit || "-"}</span>,
+          },
+          {
+            header: "Batas Bawah (Normal)",
+            render: (ind) => editingId === ind.id ? <Input type="number" step="any" value={form.minValue || ""} onChange={e => setForm({ ...form, minValue: parseFloat(e.target.value) })} className="h-8 w-24" /> : <span className="font-medium text-emerald-600">{ind.minValue?.toString() || "-"}</span>,
+          },
+          {
+            header: "Batas Atas (Normal)",
+            render: (ind) => editingId === ind.id ? <Input type="number" step="any" value={form.maxValue || ""} onChange={e => setForm({ ...form, maxValue: parseFloat(e.target.value) })} className="h-8 w-24" /> : <span className="font-medium text-red-600">{ind.maxValue?.toString() || "-"}</span>,
+          },
+          {
+            header: "Aksi",
+            className: "text-right",
+            render: (ind) => (
+              <div className="flex justify-end gap-1">
+                {editingId === ind.id ? (
+                  <>
+                    <Button size="sm" variant="ghost" className="h-8 w-8 p-0 text-green-600" onClick={handleSave} disabled={loading}><Save className="h-4 w-4" /></Button>
+                    <Button size="sm" variant="ghost" className="h-8 w-8 p-0 text-gray-400" onClick={() => setEditingId(null)}><X className="h-4 w-4" /></Button>
+                  </>
+                ) : (
+                  <>
+                    <Button size="sm" variant="ghost" className="h-8 w-8 p-0 text-[#1976d2]" onClick={() => startEdit(ind)}><Edit2 className="h-4 w-4" /></Button>
+                    <Button size="sm" variant="ghost" className="h-8 w-8 p-0 text-red-500" onClick={() => handleDelete(ind.id)} disabled={loading}><Trash2 className="h-4 w-4" /></Button>
+                  </>
+                )}
+              </div>
+            ),
+          },
+        ]}
+      />
     </div>
   )
 }

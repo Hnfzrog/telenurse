@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { SharedDataTable } from "@/components/ui/SharedDataTable"
 import { useToast } from "@/hooks/use-toast"
 import { Plus, X, Power, PowerOff, ShieldCheck, Edit, Trash2 } from "lucide-react"
 
@@ -109,67 +110,64 @@ export function NursesClient({ initialNurses }: { initialNurses: any[] }) {
         </Button>
       </div>
 
-      <div className="rounded-xl border border-gray-200 bg-white shadow-sm overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm">
-            <thead className="bg-gray-50 border-b border-gray-200">
-              <tr>
-                <th className="text-left px-5 py-3 font-medium text-gray-600">Profil</th>
-                <th className="text-left px-5 py-3 font-medium text-gray-600">Email</th>
-                <th className="text-left px-5 py-3 font-medium text-gray-600">Tanggal Terdaftar</th>
-                <th className="text-left px-5 py-3 font-medium text-gray-600">Status</th>
-                <th className="text-center px-5 py-3 font-medium text-gray-600">Aksi</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-100">
-              {initialNurses.map((n) => (
-                <tr key={n.id} className="hover:bg-gray-50">
-                  <td className="px-5 py-3">
-                    <div className="flex items-center gap-3">
-                      <div className="h-9 w-9 rounded-full bg-[#1976d2]/10 flex items-center justify-center text-[#1976d2] font-bold text-base shrink-0">
-                        {n.name[0]?.toUpperCase()}
-                      </div>
-                      <span className="font-semibold text-gray-800">{n.name}</span>
-                    </div>
-                  </td>
-                  <td className="px-5 py-3 text-gray-600">{n.email}</td>
-                  <td className="px-5 py-3 text-gray-600">{new Date(n.createdAt).toLocaleDateString("id-ID")}</td>
-                  <td className="px-5 py-3">
-                    {n.isActive ? (
-                      <span className="text-xs font-bold text-green-600 bg-green-50 px-2.5 py-1 rounded-full flex w-fit items-center gap-1"><ShieldCheck className="h-3 w-3" /> Aktif</span>
-                    ) : (
-                      <span className="text-xs font-bold text-gray-500 bg-gray-100 px-2.5 py-1 rounded-full flex w-fit items-center gap-1"><PowerOff className="h-3 w-3" /> Nonaktif</span>
-                    )}
-                  </td>
-                  <td className="px-5 py-3 text-center">
-                    <div className="flex items-center justify-center gap-2">
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        className={`h-8 w-8 p-0 ${n.isActive ? "text-red-600 border-red-200 hover:bg-red-50 hover:text-red-700" : "text-green-600 border-green-200 hover:bg-green-50 hover:text-green-700"}`}
-                        onClick={() => toggleActive(n.id, n.isActive)}
-                        disabled={loadingId === n.id}
-                        title={n.isActive ? "Nonaktifkan" : "Aktifkan"}
-                      >
-                        {n.isActive ? <PowerOff className="h-3.5 w-3.5" /> : <Power className="h-3.5 w-3.5" />}
-                      </Button>
-                      <Button size="icon" variant="ghost" className="h-8 w-8 text-blue-600 hover:bg-blue-50" onClick={() => openEditModal(n)}>
-                        <Edit className="h-4 w-4" />
-                      </Button>
-                      <Button size="icon" variant="ghost" className="h-8 w-8 text-red-600 hover:bg-red-50" onClick={() => { setDeleteId(n.id); setDeleteModalOpen(true); }}>
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-              {initialNurses.length === 0 && (
-                <tr><td colSpan={5} className="px-5 py-8 text-center text-gray-500">Belum ada data perawat.</td></tr>
-              )}
-            </tbody>
-          </table>
-        </div>
-      </div>
+      <SharedDataTable
+        data={initialNurses}
+        searchKeys={["name", "email"]}
+        emptyMessage="Belum ada data perawat."
+        columns={[
+          {
+            header: "Profil",
+            render: (n) => (
+              <div className="flex items-center gap-3">
+                <div className="h-9 w-9 rounded-full bg-[#1976d2]/10 flex items-center justify-center text-[#1976d2] font-bold text-base shrink-0">
+                  {n.name[0]?.toUpperCase()}
+                </div>
+                <span className="font-semibold text-gray-800">{n.name}</span>
+              </div>
+            ),
+          },
+          {
+            header: "Email",
+            render: (n) => <span className="text-gray-600">{n.email}</span>,
+          },
+          {
+            header: "Tanggal Terdaftar",
+            render: (n) => <span className="text-gray-600">{new Date(n.createdAt).toLocaleDateString("id-ID")}</span>,
+          },
+          {
+            header: "Status",
+            render: (n) => n.isActive ? (
+              <span className="text-xs font-bold text-green-600 bg-green-50 px-2.5 py-1 rounded-full flex w-fit items-center gap-1"><ShieldCheck className="h-3 w-3" /> Aktif</span>
+            ) : (
+              <span className="text-xs font-bold text-gray-500 bg-gray-100 px-2.5 py-1 rounded-full flex w-fit items-center gap-1"><PowerOff className="h-3 w-3" /> Nonaktif</span>
+            ),
+          },
+          {
+            header: "Aksi",
+            className: "text-center",
+            render: (n) => (
+              <div className="flex items-center justify-center gap-2">
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className={`h-8 w-8 p-0 ${n.isActive ? "text-red-600 border-red-200 hover:bg-red-50 hover:text-red-700" : "text-green-600 border-green-200 hover:bg-green-50 hover:text-green-700"}`}
+                  onClick={() => toggleActive(n.id, n.isActive)}
+                  disabled={loadingId === n.id}
+                  title={n.isActive ? "Nonaktifkan" : "Aktifkan"}
+                >
+                  {n.isActive ? <PowerOff className="h-3.5 w-3.5" /> : <Power className="h-3.5 w-3.5" />}
+                </Button>
+                <Button size="icon" variant="ghost" className="h-8 w-8 text-blue-600 hover:bg-blue-50" onClick={() => openEditModal(n)}>
+                  <Edit className="h-4 w-4" />
+                </Button>
+                <Button size="icon" variant="ghost" className="h-8 w-8 text-red-600 hover:bg-red-50" onClick={() => { setDeleteId(n.id); setDeleteModalOpen(true) }}>
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              </div>
+            ),
+          },
+        ]}
+      />
 
       {modalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
