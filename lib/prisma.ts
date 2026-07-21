@@ -8,8 +8,6 @@ declare global {
   var prismaGlobal: undefined | ReturnType<typeof prismaClientSingleton>
 }
 
-// Force clear cache so new models are loaded without restarting the server
-delete (globalThis as any).prismaGlobal;
 const prisma = globalThis.prismaGlobal ?? prismaClientSingleton()
 
 export default prisma
